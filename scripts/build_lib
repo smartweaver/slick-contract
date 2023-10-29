@@ -10,6 +10,11 @@
 
   mkdir -p lib/cjs
 
-  mv lib/core lib/cjs/core
-  mv lib/standard lib/cjs/standard
+  mv lib/chains lib/cjs/chains
+  mv lib/decorators lib/cjs/decorators
+  mv lib/handlers lib/cjs/handlers
+  mv lib/types lib/cjs/types
+  mv lib/mod.d.mts lib/cjs/mod.d.mts
+  mv lib/mod.d.ts lib/cjs/mod.d.ts
+  mv lib/mod.js lib/cjs/mod.js
 )
