@@ -2,6 +2,12 @@
 
 Slick builder APIs for Arweave smart contract creation
 
+## Installation
+
+```text
+npm install @crookse/smart-weaver-contract-slick-contract
+```
+
 ## Usage
 
 This is a simple example showing how to:
@@ -12,6 +18,8 @@ This is a simple example showing how to:
 - providing the `contract` to the exported `handle()` function.
 
 ```ts
+import { Contract } from "@crookse/smart-weaver-contract-slick-contract";
+
 // Step 1: Define your contract's initial state
 const state = {
   users: {},
