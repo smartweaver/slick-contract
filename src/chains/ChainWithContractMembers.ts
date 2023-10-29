@@ -85,6 +85,8 @@ export class ChainWithContractMembers<
     this.functions.push(fn);
 
     const wrappedHandler = new HandlerProxy(fn, handler);
+    // @ts-ignore This exists in the smart-weaver repo test. Not sure why this
+    // is complaining.
     this.chain_builder.handler(wrappedHandler);
 
     return this;

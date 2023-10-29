@@ -1,5 +1,5 @@
 import { Contract } from "../src/mod.ts";
-import { describe, expect, test, vitest } from "vitest";
+import { assert, describe, expect, test, vitest } from "vitest";
 
 const now = Date.now();
 vitest.useFakeTimers().setSystemTime(now);

@@ -111,6 +111,7 @@ describe("methods", () => {
         action: {
           input: {
             function: "pop",
+            payload: null
           },
         },
       });
@@ -132,6 +133,7 @@ describe("methods", () => {
         action: {
           input: {
             function: "pop",
+            payload: {},
           },
         },
       });
@@ -142,6 +144,7 @@ describe("methods", () => {
         action: {
           input: {
             function: "pop",
+            payload: {},
           },
         },
       });
