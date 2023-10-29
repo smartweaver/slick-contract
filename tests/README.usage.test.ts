@@ -17,15 +17,23 @@ describe("methods", () => {
         .builder()
         .initialState(state)
         // The `context` data type is shown in the "Context Data Type" section below
-        .action("add_user", (context) => {
-          const { id, name } = context.action.input.payload;
+        .action(
+          "add_user",
+          (
+            context: ContractContext<
+              typeof state,
+              { id: string; name: string }
+            >,
+          ) => {
+            const { id, name } = context.action.input.payload;
 
-          context.state.users[id] = { name }; // e.g., { 1337: { name: "CRKSTZ" } }
+            context.state.users[id] = { name }; // e.g., { 1337: { name: "CRKSTZ" } }
 
-          // Return the context back to the `Contract` instance's internals for
-          // further handling
-          return context;
-        })
+            // Return the context back to the `Contract` instance's internals for
+            // further handling
+            return context;
+          },
+        )
         // Call this to build the `Contract` instance
         .build();
 
