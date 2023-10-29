@@ -22,12 +22,4 @@ import { state } from "./contract.state.js";
     });
 
   console.log({ result });
-
-  console.log(`\n\nView your transactions (may take some time to post):`);
-  console.log(
-    `  - Source code: https://viewblock.io/arweave/block/${result.source_code_id}`,
-  );
-  console.log(
-    `  - Contract: https://viewblock.io/arweave/block/${result.contract_id}`,
-  );
 })();

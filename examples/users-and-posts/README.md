@@ -30,6 +30,12 @@ npm install
    You should see something similar to the following:
 
    ```text
+   {
+      result: {
+         source_code_id: 'LV3bwwZqxSnBIY94tXUujaHoFjw026S7aRDNawbFSTo',
+         contract_id: '1bkx9EsMpaAkVl_y5PojI0skxOdM5s_Kmx0EnGmGFDM'
+      }
+   }
    ```
 
 **If you want to deploy to the Arweave network, you can do the following:**
@@ -73,16 +79,11 @@ npm install
    Requesting: https://arweave.net:443/tx
    Response:   https://arweave.net/tx - 400
    {
-   result: {
-      source_code_id: 'zhUiT8rVlt6CYnluQ-x5fyxYgAssDDfs0MRmwB1-MKM',
-      contract_id: 'fojRJh7NDWysAclGNadMyyO0PvdL86C92d6IOZfnjWQ'
+      result: {
+         source_code_id: 'zhUiT8rVlt6CYnluQ-x5fyxYgAssDDfs0MRmwB1-MKM',
+         contract_id: 'fojRJh7NDWysAclGNadMyyO0PvdL86C92d6IOZfnjWQ'
+      }
    }
-   }
-
-
-   View your transactions (may take some time to post):
-   - Source code: https://viewblock.io/arweave/block/zhUiT8rVlt6CYnluQ-x5fyxYgAssDDfs0MRmwB1-MKM
-   - Contract: https://viewblock.io/arweave/block/fojRJh7NDWysAclGNadMyyO0PvdL86C92d6IOZfnjWQ
    ```
 
 ## Misc
