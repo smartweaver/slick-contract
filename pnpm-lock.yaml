@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@crookse/smart-weaver':
-    specifier: ~0.0.16
-    version: 0.0.16
+    specifier: ~0.0.17
+    version: 0.0.17
 
 devDependencies:
   tsup:
@@ -25,8 +25,8 @@ devDependencies:
 
 packages:
 
-  /@crookse/smart-weaver@0.0.16:
-    resolution: {integrity: sha512-7uIF3x3L0XHeFd3OTevS2YtIx99OZfO8zUmB5b+/5BklAcjewFJ2crce3t/BL6zS6t2qaopA8iOlX5y8UfK0Dw==}
+  /@crookse/smart-weaver@0.0.17:
+    resolution: {integrity: sha512-GHhtj2+pKw94tP7zoPyIke0rqAMRottdRipVfjwyiyaxw2R9Vk0lF+P+LhkaVo9nxm6GRIkWjR4USFGNVMbasA==}
     dependencies:
       '@types/node': 20.8.9
       vite: 4.5.0(@types/node@20.8.9)

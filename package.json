@@ -31,6 +31,6 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "@crookse/smart-weaver": "~0.0.16"
+    "@crookse/smart-weaver": "~0.0.17"
   }
 }
