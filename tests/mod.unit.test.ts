@@ -111,7 +111,7 @@ describe("methods", () => {
         action: {
           input: {
             function: "pop",
-            payload: null
+            payload: null,
           },
         },
       });
