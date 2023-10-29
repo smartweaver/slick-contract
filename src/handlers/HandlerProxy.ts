@@ -24,9 +24,8 @@ export class HandlerProxy extends AnonymousFnHandler {
   }
 
   /**
-   * 
-   * @param context 
-   * @returns 
+   * @param context
+   * @returns
    */
   handle(context: Context) {
     return Promise

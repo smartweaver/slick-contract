@@ -6,14 +6,15 @@ import { HandlerProxy } from "../handlers/HandlerProxy";
 import { Context } from "../types/Context";
 
 type ChainMap<Fns> = Map<Fns, HandlerWithFunctionName>;
-type ContractManager<Fns = string> = { contract: { actions: ChainMap<Fns> } }
+type ContractManager<Fns = string> = { contract: { actions: ChainMap<Fns> } };
 type KeyValues<O = {}> = { [K in keyof O]: O[K] };
 type ActionHandler = Handler | HandlerWithFunctionName;
 
 /**
  * The first builder to building the `Contract` object.
  */
-export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain {
+export class ActionsBuilder<S extends KeyValues<S>>
+  extends IsolatedHandlerChain {
   protected contract_state: S;
   #functions: string[] = [];
 
@@ -118,9 +119,9 @@ export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain
           .then((validContext) => {
             this.#addContractManager(
               {
-                actions: chain
+                actions: chain,
               },
-              validContext
+              validContext,
             );
 
             const fn = validContext.action.input.function;
@@ -129,7 +130,7 @@ export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain
               return chain.get(fn)!.handle(validContext);
             }
 
-            throw new Error(`Unknown function '${fn}' provided`)
+            throw new Error(`Unknown function '${fn}' provided`);
           })
           .then((returnedContext) => returnedContext);
       },
@@ -137,7 +138,6 @@ export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain
 
     return handler;
   }
-
 
   /**
    * Add the chain map to the context so it can be used by the handlers.
@@ -150,16 +150,16 @@ export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain
    * ```js
    *   function handler(context) {
    *     const { contract, action } = context;
-   * 
+   *
    *     const tasks = Promise
    *       .resolve()
    *       .then(() => contract.actions.get("step_1_handler")?.handle(context))
    *       .then(() => contract.actions.get("step_2_handler")?.handle(context))
-   * 
+   *
    *     if (action.input.payload.includes("step_3")) {
    *       tasks.then(() => contract.actions.get("step_3_handler".handle(context));
    *     }
-   * 
+   *
    *     return tasks;
    *   }
    * ```
@@ -180,9 +180,9 @@ export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain
    */
   #addContractManager(
     contractMembers: {
-      [K in keyof ContractManager["contract"]]: ContractManager["contract"][K]
+      [K in keyof ContractManager["contract"]]: ContractManager["contract"][K];
     },
-    context: Context
+    context: Context,
   ) {
     Object.defineProperty(context, "contract", {
       value: contractMembers,
@@ -199,7 +199,10 @@ export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain
  * @param functions The list of functions the context is allowed to access.
  * @returns The context as a typed object.
  */
-function validateContext(context: unknown, functions: string[]): Promise<Context> {
+function validateContext(
+  context: unknown,
+  functions: string[],
+): Promise<Context> {
   return Promise
     .resolve()
     .then(() => validateContextShape(context))
