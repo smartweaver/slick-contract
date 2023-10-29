@@ -1,69 +1,91 @@
-# SmartWeaver
+# SmartWeaver Contract Chained
 
-Patternized SmartWeave workflows
+SmartWeaver contract implementation with a chained methods API
 
-## Explore
+## Usage
 
-- https://github.com/crookse/smart-weaver-client-arweave
-- https://github.com/crookse/smart-weaver-client-warp
-- https://github.com/crookse/smart-weaver-contract-chained
+This is a simple example showing how to:
 
-## Codebases
+- define an initial state;
+- define a contract using the initial state;
+- add actions to the contract; and
+- simulating a write interaction to the contract.
 
-The SmartWeaver ecosystem is made up of the following codebases:
+```ts
+import { Contract, ContextContract } from "@crookse/smart-weaver-contract-chained";
 
-- Core (included in this repository)
-- Standard (included in this repository)
-- Modules (not included in this repository)
+// Define the initial state
+const state = {
+  users: {},
+}
 
-These codebases are explained in further detail below.
+// Define the contract
+const contract = Contract
+  .builder()
+  .initialState(state)
+  .action("add_user", (context) => { // `context` data type is shown in the below codeblock
+      const {
+        id,
+        name
+      } = context.action.input.payload;
 
-### Core
+      // Add a new user
+      context.state.users[id] = {
+        name
+      };
 
-This part of the codebase provides types, interfaces, and classes (with minimal
-implementation). It contains the lowest level APIs and is intended to help build
-the Standard and Modules codebases.
+      // Return the context back to the `Contract` instance's internals for
+      // further handling
+      return context;
+    }
+  )
+  .build(); // Call this to build the `Contract` instance
 
-To separate concerns, Core does not import code from Standard or Modules.
+// Simulating a write interaction would look like ...
+export function handle(
+  state,
+  action: {
+    input: {
+      // This will cause the `.action("add_user", (...))` method to be used
+      function: "add_user",
+      payload: {
+        id: 1337,
+        name: "CRKSTZ"
+      }
+    }
+  }
+) {
+  return contract
+    // The `{ state, action }` passed to the `handle()` method becomes the
+    // `context` object in the `.action(...)` methods above
+    .handle({ state, action })
+    // The `Contract` instance's internals return the `context` object back to
+    // you, so you can do the following and be done handling the interaction
+    .then((context) => {
+      return { state };
+    })
+    // The `Contract` instance does not throw `ContractError` objects. It only
+    // throws `Error` objects, so you have to catch them and throw the
+    // `ContractError` object yourself.
+    .catch((error) => {
+      throw new ContractError("Something went wrong");
+    });
+}
 
-### Standard
-
-This part of the codebase is similar to Deno's Standard Library and Go's
-Standard Library, but smaller. Standard code is intended to be used as
-standalone code and code to help build modules in the Modules codebase (e.g.,
-smart-weaver-client-arweave).
-
-To separate concerns, Standard code only imports from Standard and Core. It does
-not import from Modules.
-
-### Modules
-
-This part of the codebase is:
-
-- separated from this repository;
-- is a combination of multiple repositories (prefixed with `smart-weaver-`); and
-- contains third-party code.
-
-Modules import the most functionality for things like processing contract
-interactions, deploying contracts, bundling transactions, etc. Modules import
-from:
-
-- Core
-- Standard
-- Third-party code (e.g., `smartweave` and `warp-contracts`)
-
-**Module Names**
-
-Each module has a `smart-weaver-` prefix followed by a "type" and its name in
-its repository. The full naming convention is:
 
 ```
-smart-weaver-{type of implementation}-{name of module}
+
+### Context Data Type
+
+```ts
+export type Context<S = unknown, P = any> = {
+  state: S;
+  action: {
+    input: {
+      function: string;
+      payload: P;
+    };
+    caller?: string;
+  };
+};
 ```
-
-Using the above format means:
-
-- `smart-weaver-client-arweave` is a SmartWeaver client implementation named
-  `Arweave`
-- `smart-weaver-contract-chained` is a SmartWeaver contract implementation named
-  `ContractChained`
