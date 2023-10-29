@@ -1,0 +1,8 @@
+{
+  "name": "app",
+  "main": "app.js",
+  "license": "MIT",
+  "dependencies": {
+    "@crookse/smart-weaver-contract-slick-contract": "~0.0.5"
+  }
+}
