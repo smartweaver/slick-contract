@@ -1,0 +1,15 @@
+# Directories
+.vscode/
+cache/
+dist/
+lib/
+node_modules/
+tmp/
+
+# Files
+.DS_Store
+*.log*
+logs
+# We only use pnpm
+yarn.lock
+package-lock.json

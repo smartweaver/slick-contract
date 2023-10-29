@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+(
+  pnpm build && \
+  cp package.json lib/package.json && \
+  cp README.md lib/README.md && \
+  cp LICENSE lib/LICENSE && \
+  cd lib && pnpm publish
+)

@@ -1,0 +1,36 @@
+{
+  "name": "@crookse/smart-weaver-contract-chained",
+  "version": "0.0.1",
+  "description": "Provider of patternized SmartWeave workflows",
+  "author": "Eric Crooks <eric.crooks.github@gmail.com> (https://crookse.com)",
+  "license": "GPL-3.0",
+  "scripts": {
+    "build": "./scripts/build_lib",
+    "test": "vitest",
+    "publish:npm": "./scripts/publish_npm"
+  },
+  "keywords": [
+    "arweave",
+    "blockchain",
+    "blockweave",
+    "contracts",
+    "crypto",
+    "dapps",
+    "drashland",
+    "framework",
+    "http",
+    "permanence",
+    "smart-contracts",
+    "smartweave",
+    "web3"
+  ],
+  "devDependencies": {
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "@crookse/smart-weaver": "~0.0.12"
+  }
+}
