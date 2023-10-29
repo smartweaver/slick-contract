@@ -12,34 +12,32 @@ This is a simple example showing how to:
 - simulating a write interaction to the contract.
 
 ```ts
-import { Contract, ContextContract } from "@crookse/smart-weaver-contract-chained";
+import {
+  ContextContract,
+  Contract,
+} from "@crookse/smart-weaver-contract-chained";
 
 // Define the initial state
 const state = {
   users: {},
-}
+};
 
 // Define the contract
 const contract = Contract
   .builder()
   .initialState(state)
-  .action("add_user", (context) => { // `context` data type is shown in the below codeblock
-      const {
-        id,
-        name
-      } = context.action.input.payload;
+  // The `context` data type is shown in the "Context Data Type" section below
+  .action("add_user", (context) => {
+    const { id, name } = context.action.input.payload;
 
-      // Add a new user
-      context.state.users[id] = {
-        name
-      };
+    context.state.users[id] = { name }; // e.g., { 1337: { name: "CRKSTZ" } }
 
-      // Return the context back to the `Contract` instance's internals for
-      // further handling
-      return context;
-    }
-  )
-  .build(); // Call this to build the `Contract` instance
+    // Return the context back to the `Contract` instance's internals for
+    // further handling
+    return context;
+  })
+  // Call this to build the `Contract` instance
+  .build();
 
 // Simulating a write interaction would look like ...
 export function handle(
@@ -47,13 +45,13 @@ export function handle(
   action: {
     input: {
       // This will cause the `.action("add_user", (...))` method to be used
-      function: "add_user",
+      function: "add_user";
       payload: {
-        id: 1337,
-        name: "CRKSTZ"
-      }
-    }
-  }
+        id: 1337;
+        name: "CRKSTZ";
+      };
+    };
+  },
 ) {
   return contract
     // The `{ state, action }` passed to the `handle()` method becomes the
@@ -71,8 +69,6 @@ export function handle(
       throw new ContractError("Something went wrong");
     });
 }
-
-
 ```
 
 ### Context Data Type
