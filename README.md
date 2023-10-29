@@ -39,33 +39,71 @@ const contract = Contract
   // Call this to build the `Contract` instance
   .build();
 
-// Simulating a write interaction would look like ...
-export function handle(
-  state,
-  action: {
-    input: {
-      // This will cause the `.action("add_user", (...))` method to be used
-      function: "add_user";
-      payload: {
-        id: 1337;
-        name: "CRKSTZ";
-      };
-    };
+// If we had the following `handle` function ...
+export function handle(state, action) {
+  return contract
+    .handle({ state, action })
+    .then((context: { state: typeof state }) => {
+      return { state: context.state };
+    })
+    .catch((_error: any) => {
+      throw new ContractError("Something went wrong");
+    });
+}
+
+// ... then the following call will ...
+
+const action = {
+  input: {
+    // This will cause the `.action("add_user", (...))` method to be used
+    function: "add_user",
+    payload: {
+      id: 1337,
+      name: "CRKSTZ",
+    },
   },
-) {
+};
+
+const result = await handle(state, action);
+
+// ... result in the following state
+console.log(result.state); // { users: { 1337: { name: "CRKSTZ" } } }
+```
+
+### The `handle()` Function Explained
+
+The `handle()` function above is explained below using the given `"add_user"`
+action that was passed to it.
+
+```ts
+export function handle(state, action) {
+  //
+  // For context, the `action` argument is
+  //
+  // {
+  //   input: {
+  //     function: "add_user",
+  //     payload: {
+  //       id: 1337,
+  //       name: "CRKSTZ",
+  //     }
+  //   }
+  // }
+  //
+
   return contract
     // The `{ state, action }` passed to the `handle()` method becomes the
     // `context` object in the `.action(...)` methods above
     .handle({ state, action })
     // The `Contract` instance's internals return the `context` object back to
     // you, so you can do the following and be done handling the interaction
-    .then((context) => {
-      return { state };
+    .then((context: { state: typeof state }) => {
+      return { state: context.state };
     })
     // The `Contract` instance does not throw `ContractError` objects. It only
     // throws `Error` objects, so you have to catch them and throw the
     // `ContractError` object yourself.
-    .catch((error) => {
+    .catch((_error: any) => {
       throw new ContractError("Something went wrong");
     });
 }
