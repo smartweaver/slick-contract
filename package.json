@@ -1,7 +1,7 @@
 {
-  "name": "@crookse/smart-weaver-contract-chained",
-  "version": "0.0.3",
-  "description": "SmartWeaver contract implementation with a chained methods API",
+  "name": "@crookse/smart-weaver-contract-slick-contract",
+  "version": "0.0.4",
+  "description": "Slick builder APIs for Arweave smart contract creation",
   "author": "Eric Crooks <eric.crooks.github@gmail.com> (https://crookse.com)",
   "license": "GPL-3.0",
   "scripts": {
@@ -31,6 +31,6 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "@crookse/smart-weaver": "~0.0.13"
+    "@crookse/smart-weaver": "~0.0.16"
   }
 }

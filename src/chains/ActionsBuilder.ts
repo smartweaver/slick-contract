@@ -1,42 +1,29 @@
-import { HandlerWithFunctionName } from "@crookse/smart-weaver/esm/standard/handlers/HandlerWithFunctionName";
-import { IsolatedHandlerChain } from "@crookse/smart-weaver/esm/standard/chains/IsolatedHandlerChain";
+import { HandlerWithFunctionName } from "@crookse/smart-weaver/standard/handlers/HandlerWithFunctionName";
+import { IsolatedHandlerChain } from "@crookse/smart-weaver/standard/chains/IsolatedHandlerChain";
+import { Handler } from "@crookse/smart-weaver/core/handlers/Handler";
+
 import { HandlerProxy } from "../handlers/HandlerProxy";
 import { Context } from "../types/Context";
-import { Handler } from "@crookse/smart-weaver/esm/core/handlers/Handler";
 
+type ChainMap<Fns> = Map<Fns, HandlerWithFunctionName>;
+type ContractManager<Fns = string> = { contract: { actions: ChainMap<Fns> } }
 type KeyValues<O = {}> = { [K in keyof O]: O[K] };
-
 type ActionHandler = Handler | HandlerWithFunctionName;
 
 /**
- * The builder for the `Contract` object.
+ * The first builder to building the `Contract` object.
  */
-export class ChainWithContractMembers<
-  S extends KeyValues<S>,
-> extends IsolatedHandlerChain {
-  // TODO(crookse) Implement. Currently used for type inferrence.
-  protected contract_state: S | {};
+export class ActionsBuilder<S extends KeyValues<S>> extends IsolatedHandlerChain {
+  protected contract_state: S;
   #functions: string[] = [];
 
   get functions() {
     return this.#functions;
   }
 
-  constructor(state?: S) {
+  constructor(state: S) {
     super();
-    this.contract_state = state || {};
-  }
-
-  /**
-   * Set the contract's initial state.
-   * @param initialState The contract's initial state.
-   * @returns This builder for further method chaining.
-   */
-  initialState<S>(
-    initialState: KeyValues<S>,
-  ): ChainWithContractMembers<S> {
-    // TODO(crookse) Infer without instantiating a new object
-    return new ChainWithContractMembers<S>(initialState);
+    this.contract_state = state;
   }
 
   /**
@@ -50,9 +37,9 @@ export class ChainWithContractMembers<
   action(
     fn: ActionHandler | string,
     handler?: (
-      context: Context<S>,
+      context: Context<S> & ContractManager,
     ) => Context<S> | Promise<Context<S>>,
-  ): ChainWithContractMembers<S> {
+  ): this {
     if (typeof fn !== "string") {
       if (!("function_name" in fn)) {
         throw new Error(`Handler is missing 'function_name' property`);
@@ -62,6 +49,8 @@ export class ChainWithContractMembers<
         throw new Error(`Handler is missing 'handle()' method`);
       }
 
+      // Pass this object back to this method to turn it into a `HandlerProxy`
+      // instance
       return this.action(fn.function_name, function (context) {
         return fn.handle(context);
       });
@@ -85,8 +74,7 @@ export class ChainWithContractMembers<
     this.functions.push(fn);
 
     const wrappedHandler = new HandlerProxy(fn, handler);
-    // @ts-ignore This exists in the smart-weaver repo test. Not sure why this
-    // is complaining.
+
     this.chain_builder.handler(wrappedHandler);
 
     return this;
@@ -118,38 +106,115 @@ export class ChainWithContractMembers<
    */
   build<HandleMethodContext = { state: S; action: any }>() {
     const functions = this.functions;
-    const firstHandler = super.build();
+    const chain = this.chain_builder.build();
 
-    return {
+    // TODO(crookse) Create a class
+    const handler = {
       functions,
       handle: <R = { state: S }>(context: HandleMethodContext): Promise<R> => {
         return Promise
           .resolve()
           .then(() => validateContext(context, functions))
-          // @ts-ignore Context objects don't match
-          .then(() => firstHandler.handle(context))
+          .then((validContext) => {
+            this.#addContractManager(
+              {
+                actions: chain
+              },
+              validContext
+            );
+
+            const fn = validContext.action.input.function;
+
+            if (chain.has(fn)) {
+              return chain.get(fn)!.handle(validContext);
+            }
+
+            throw new Error(`Unknown function '${fn}' provided`)
+          })
           .then((returnedContext) => returnedContext);
       },
     };
+
+    return handler;
+  }
+
+
+  /**
+   * Add the chain map to the context so it can be used by the handlers.
+   * Handlers could delegate work to other handlers if needed, but they cannot
+   * do so if they are provided as anonymous functions. There is no `this`
+   * context in annoymous function handlers, so we add the chain map as a way
+   * for handlers to access other handlers to delegate work if needed. This
+   * looks like:
+   *
+   * ```js
+   *   function handler(context) {
+   *     const { contract, action } = context;
+   * 
+   *     const tasks = Promise
+   *       .resolve()
+   *       .then(() => contract.actions.get("step_1_handler")?.handle(context))
+   *       .then(() => contract.actions.get("step_2_handler")?.handle(context))
+   * 
+   *     if (action.input.payload.includes("step_3")) {
+   *       tasks.then(() => contract.actions.get("step_3_handler".handle(context));
+   *     }
+   * 
+   *     return tasks;
+   *   }
+   * ```
+   *
+   * The use case for this is a single handler that serves as a proxy to
+   * multiple handlers that does its work. For exmaple:
+   *
+   * ```text
+   * incoming action === "build_car"
+   *   |
+   *   +--> build_car handler
+   *   |      +--> call build_wheels handler
+   *   |      +--> call build_doors handler
+   *   |      +--> call add_tires handler
+   *   |
+   *   +--> return result back to caller
+   * ```
+   */
+  #addContractManager(
+    contractMembers: {
+      [K in keyof ContractManager["contract"]]: ContractManager["contract"][K]
+    },
+    context: Context
+  ) {
+    Object.defineProperty(context, "contract", {
+      value: contractMembers,
+      configurable: false,
+      writable: false,
+    });
+
+    return context;
   }
 }
 
-function validateContext(context: unknown, functions: string[]) {
+/**
+ * @param context The context in question.
+ * @param functions The list of functions the context is allowed to access.
+ * @returns The context as a typed object.
+ */
+function validateContext(context: unknown, functions: string[]): Promise<Context> {
   return Promise
     .resolve()
     .then(() => validateContextShape(context))
-    .then((validatedContext) => {
+    .then((validContext) => {
       if (!functions || !functions.length) {
         throw new Error(`Contract does not have functions defined`);
       }
 
-      const incomingFunction = validatedContext.action.input.function;
+      const incomingFunction = validContext.action.input.function;
 
       if (!functions.includes(incomingFunction)) {
         throw new Error(`Unknown function '${incomingFunction}' provided`);
       }
 
-      return context;
+      return validContext;
     });
 }
 
@@ -157,7 +222,7 @@ function validateContext(context: unknown, functions: string[]) {
  * Validate that the given `context` is in a shape expected by contracts.
  * @param context The context in question.
  */
-function validateContextShape(context: unknown) {
+function validateContextShape(context: unknown): Context {
   if (!context) {
     throw new Error(`Unexpected missing \`context\` object`);
   }

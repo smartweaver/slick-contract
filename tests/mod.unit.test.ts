@@ -71,15 +71,21 @@ describe("methods", () => {
         .action(new Add("add"))
         // Function 2
         .action("pop", (context) => {
+          context.action.input.function = "pop_actual";
+          return context.contract.actions.get("pop_actual")?.handle(context);
+        })
+        // Function 3 (but must use Function 2 to access this)
+        // TODO(crookse) Test permissions
+        .action("pop_actual", (context) => {
           context.state.greetings.pop();
           return context;
         })
-        // Function 3
+        // Function 4
         .action(new NoHandleMethod("no_handle_method"))
         .build<ContractContext<typeof state>>();
 
-      // There should be Function 1, 2, and 3
-      expect(contract.functions.length).toBe(3);
+      // There should be Function 1, 2, 3, and 4
+      expect(contract.functions.length).toBe(4);
 
       let result;
 

@@ -1,17 +1,7 @@
-import { ChainWithContractMembers } from "./chains/ChainWithContractMembers";
-import { HandlerWithFunctionName } from "@crookse/smart-weaver/esm/standard/handlers/HandlerWithFunctionName";
+import { InitialStateBuilder } from "./chains/InitialStateBuilder";
+import { HandlerWithFunctionName } from "@crookse/smart-weaver/standard/handlers/HandlerWithFunctionName";
 
 export type { Context as ContractContext } from "./types/Context.ts";
-
-/**
- * TODO(crookse) Imported type isn't checked, so we have this class extending
- * the class that has the `function_name` property.
- */
-class ContractHandler extends HandlerWithFunctionName {
-  constructor(name: string) {
-    super(name);
-  }
-}
 
 export class Contract {
   /**
@@ -19,9 +9,9 @@ export class Contract {
    * To ensure this contract handles all handlers properly, handlers should be
    * of this handler type.
    */
-  static readonly Handler = ContractHandler;
+  static readonly Handler = HandlerWithFunctionName;
 
   static builder() {
-    return new ChainWithContractMembers();
+    return new InitialStateBuilder();
   }
 }

@@ -1,6 +1,6 @@
-# SmartWeaver Contract Chained
+# SmartWeaver Slick Contract
 
-SmartWeaver contract implementation with a chained methods API
+Slick builder APIs for Arweave smart contract creation
 
 ## Usage
 
@@ -12,11 +12,6 @@ This is a simple example showing how to:
 - simulating a write interaction to the contract.
 
 ```ts
-import {
-  ContextContract,
-  Contract,
-} from "@crookse/smart-weaver-contract-chained";
-
 // Define the initial state
 const state = {
   users: {},
@@ -24,10 +19,9 @@ const state = {
 
 // Define the contract
 const contract = Contract
-  .builder()
-  .initialState(state)
-  // The `context` data type is shown in the "Context Data Type" section below
-  .action("add_user", (context) => {
+  .builder()                          // Access the contract builder ...
+  .initialState(state)                // ... (like this one to add your initial state)
+  .action("add_user", (context) => {  // 
     const { id, name } = context.action.input.payload;
 
     context.state.users[id] = { name }; // e.g., { 1337: { name: "CRKSTZ" } }
