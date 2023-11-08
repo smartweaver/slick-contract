@@ -86,13 +86,18 @@ This is a simple example showing how to:
     }
     ```
 
-1. Build your `contract.ts` file.
+1. Build your `contract.ts` file (and optionally your `state.ts` file).
 
     ```bash
-    npx @smartweaver/slick-contract build contract.ts
+    npx @smartweaver/slick-contract build contract.ts state.ts
     ```
 
-    The above command will create a `contract.ts.build.js` file in the same directory as your `contract.ts` file. This is the file (aka smart contract) you should deploy to the network.
+    The above command will create:
+
+   - a `contract.ts.build.js` file in the same directory as your `contract.ts` file; and
+   - a `state.ts.build.json` file in the same directory as your `state.ts` file.
+   
+   These are the files you deploy to the Arweave network.
 
     _Note: This script tries to be smart about ensuring your built contract file has a valid `export async function handle(...)`, but please verify this manually. Otherwise your contract might not work in the Arweave network._
 

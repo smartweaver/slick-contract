@@ -157,7 +157,7 @@ You will have to fix your state file to export a \`state\` variable or export a
 `);
     } else {
       fs.writeFileSync(
-        stateFilepath + ".json",
+        stateFilepath + ".build.json",
         JSON.stringify(state, null, 2),
         "utf-8",
       );
@@ -167,7 +167,9 @@ You will have to fix your state file to export a \`state\` variable or export a
   help.log(`Done building contract files. If they built properly, view them at:
 
   - ${outfile}
-  - ${stateFilepath ? (stateFilepath + ".json") : "(no state file provided)"}
+  - ${
+    stateFilepath ? (stateFilepath + ".build.json") : "(no state file provided)"
+  }
   
 `);
 }
