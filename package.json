@@ -1,6 +1,6 @@
 {
   "name": "@smartweaver/slick-contract",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Slick builder APIs for Arweave smart contract creation",
   "author": "Eric Crooks <eric.crooks.github@gmail.com> (https://crookse.com)",
   "license": "GPL-3.0",
