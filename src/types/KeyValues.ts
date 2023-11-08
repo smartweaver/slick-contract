@@ -1,1 +1,3 @@
-export type KeyValues<O = {}> = { [K in keyof O]: O[K] };
+export type KeyValues<
+  O = any,
+> = { [K in keyof O]: O[K] };

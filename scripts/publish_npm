@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-(
-  pnpm build && \
-  cd lib && \
-  pnpm publish
-)

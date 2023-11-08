@@ -10,7 +10,7 @@ export class InitialStateBuilder<S extends KeyValues<S>> {
    * @param initialState The contract's initial state.
    * @returns This builder for further method chaining.
    */
-  initialState<S>(initialState: KeyValues<S>) {
-    return new ActionsBuilder(initialState);
+  initialState<S>() {
+    return new ActionsBuilder<S>();
   }
 }

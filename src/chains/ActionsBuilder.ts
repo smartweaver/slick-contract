@@ -1,38 +1,43 @@
-import { HandlerWithFunctionName } from "@crookse/smart-weaver/standard/handlers/HandlerWithFunctionName";
-import { IsolatedHandlerChain } from "@crookse/smart-weaver/standard/chains/IsolatedHandlerChain";
-import { Handler } from "@crookse/smart-weaver/core/handlers/Handler";
-
+import {
+  Handler,
+  HandlerWithFunctionName,
+  IsolatedHandlerChain,
+} from "../deps";
 import { HandlerProxy } from "../handlers/HandlerProxy";
 import { Context } from "../types/Context";
 
-type ChainMap<Fns> = Map<Fns, HandlerWithFunctionName>;
+type ChainMap<Fns> = Map<
+  Fns,
+  HandlerWithFunctionName
+>;
 type ContractManager<Fns = string> = { contract: { actions: ChainMap<Fns> } };
-type KeyValues<O = {}> = { [K in keyof O]: O[K] };
-type ActionHandler = Handler | HandlerWithFunctionName;
+type KeyValues<O = any> = { [K in keyof O]: O[K] };
+type ActionHandler =
+  | Handler
+  | HandlerWithFunctionName;
 
 /**
  * The first builder to building the `Contract` object.
  */
-export class ActionsBuilder<S extends KeyValues<S>>
-  extends IsolatedHandlerChain {
-  protected contract_state: S;
+export class ActionsBuilder<
+  S extends KeyValues<S>,
+> extends IsolatedHandlerChain {
   #functions: string[] = [];
 
   get functions() {
     return this.#functions;
   }
 
-  constructor(state: S) {
+  constructor() {
     super();
-    this.contract_state = state;
   }
 
   /**
-   * Add an interaction handler to the contract. Interaction handlers evaluate
-   * the `state` and `interaction` objects received from the network and can
-   * modify the state based on the data sent in the `interaction` object.
+   * Add an action handler to the contract. Action handlers evaluate the `state`
+   * and `action` objects received from the network. They can also modify the
+   * state based on the data sent in the `action` object.
    * @param fnName The name of the function the handler handles.
-   * @param handler The interaction handler.
+   * @param handler The action handler.
    * @returns This builder.
    */
   action(
@@ -42,7 +47,11 @@ export class ActionsBuilder<S extends KeyValues<S>>
     ) => Context<S> | Promise<Context<S>>,
   ): this {
     if (typeof fn !== "string") {
-      if (!("function_name" in fn)) {
+      if (
+        !("function_name" in fn) ||
+        !fn.function_name ||
+        (typeof fn.function_name !== "string")
+      ) {
         throw new Error(`Handler is missing 'function_name' property`);
       }
 
@@ -85,7 +94,7 @@ export class ActionsBuilder<S extends KeyValues<S>>
    * Build the contract that can handle state and interactions.
    *
    * @returns A `Contract` instance. Its only method is `handle()`, which should
-   * be used to pass the `state` and `interaction` objects received from the
+   * be used to pass the `state` and `action` objects received from the
    * network. These objects should be wrapped in a single object known as the
    * `context` object in this library. See example.
    *
@@ -93,9 +102,9 @@ export class ActionsBuilder<S extends KeyValues<S>>
    * ```ts
    * const contract = Contract.builder().build();
    *
-   * export function handle(state, interaction) {
+   * export function handle(state, action) {
    *   return contract
-   *     .handle({ state, interaction }) // Put the `state` and `interaction` into a single object. This will be the `context` object.
+   *     .handle({ state, action }) // Put the `state` and `action` into a single object. This will be the `context` object.
    *     .then((context) => {
    *       return { state: context.state };
    *     })
@@ -233,15 +242,30 @@ function validateContextShape(context: unknown): Context {
   if (
     typeof context !== "object"
   ) {
-    throw new Error(`Argument 'context' should be an object`);
+    throw new Error(
+      `Argument \`context\` in \`contract.handle(context)\`should be an object`,
+    );
   }
+
+  const exampleCall = `Example:
+  
+  contract.handle({
+    state: { ... },
+    action: {
+      input: {
+        function: "some_function_name"
+      }
+    }
+  });
+  
+`;
 
   if (
     !("state" in context) ||
     !context.state
   ) {
     throw new Error(
-      `Field 'context.state' is required`,
+      `Field \`context.state\` is required. ${exampleCall}`,
     );
   }
 
@@ -251,7 +275,7 @@ function validateContextShape(context: unknown): Context {
     (typeof context.action !== "object")
   ) {
     throw new Error(
-      `Field 'context.action' should be an object`,
+      `Field 'context.action' should be an object. ${exampleCall}`,
     );
   }
 
@@ -261,7 +285,7 @@ function validateContextShape(context: unknown): Context {
     (typeof context.action.input !== "object")
   ) {
     throw new Error(
-      `Field 'context.action.input' should be an object`,
+      `Field 'context.action.input' should be an object. ${exampleCall}`,
     );
   }
 
@@ -271,7 +295,7 @@ function validateContextShape(context: unknown): Context {
     (typeof context.action.input.function !== "string")
   ) {
     throw new Error(
-      `Field 'context.action.input.function' should be a string`,
+      `Field 'context.action.input.function' should be a string. ${exampleCall}`,
     );
   }
 

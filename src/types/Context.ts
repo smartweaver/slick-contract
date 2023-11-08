@@ -1,4 +1,7 @@
-export type Context<S = unknown, P = any> = {
+export type Context<
+  S = unknown,
+  P = any,
+> = {
   state: S;
   action: {
     input: {

@@ -84,7 +84,7 @@ describe("function handle(currentState, action)", () => {
       expect(result).toStrictEqual({ state: { storage: ["sub"] } });
     });
 
-    test("handles unknown function: wwaaaat", async () => {
+    test("handles unknown function: wwaaaat", () => {
       return handle(
         { storage: [] },
         {

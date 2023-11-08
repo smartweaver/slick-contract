@@ -1,5 +1,5 @@
-import { InitialStateBuilder } from "./chains/InitialStateBuilder";
-import { HandlerWithFunctionName } from "@crookse/smart-weaver/standard/handlers/HandlerWithFunctionName";
+import { InitialStateBuilder } from "./chains/InitialStateBuilder.ts";
+import { HandlerWithFunctionName } from "./deps.ts";
 
 export type { Context as ContractContext } from "./types/Context.ts";
 
@@ -11,6 +11,10 @@ export class Contract {
    */
   static readonly Handler = HandlerWithFunctionName;
 
+  /**
+   * Get the builder for building on object of this class.
+   * @returns The builder.
+   */
   static builder() {
     return new InitialStateBuilder();
   }

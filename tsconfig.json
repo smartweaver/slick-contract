@@ -3,7 +3,6 @@
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "inlineSources": false,
-    "isolatedModules": true,
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -16,6 +15,10 @@
     "strict": true,
     "target": "es2017"
   },
-  "include": ["./src", "./tests"],
-  "exclude": ["node_modules", "_unstable"]
+  "include": [
+    "./src/**/*.ts",
+    "./tests/**/*.ts",
+    "./scripts/**/*.ts",
+    "node_modules"
+  ]
 }

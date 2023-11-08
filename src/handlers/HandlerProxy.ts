@@ -1,8 +1,5 @@
-import {
-  AnonymousFn,
-  AnonymousFnHandler,
-} from "@crookse/smart-weaver/standard/handlers/AnonymousFnHandler";
-import { Context } from "../types/Context";
+import { AnonymousFn, AnonymousFnHandler } from "../deps.ts";
+import { Context } from "../types/Context.ts";
 
 /**
  * This class stands in front of a handler function -- ensuring the handle

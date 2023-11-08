@@ -10,6 +10,7 @@ tmp/
 .DS_Store
 *.log*
 logs
-# We only use pnpm
-yarn.lock
+# We only use yarn
+*lock.yaml
 package-lock.json
+!yarn.lock
