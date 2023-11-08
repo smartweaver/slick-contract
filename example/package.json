@@ -5,11 +5,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "npx @smartweaver/slick-contract build src/v1.contract.ts",
+    "build": "npx @smartweaver/slick-contract build src/v1.contract.ts src/v1.state.ts",
     "test-app": "ts-node-esm src/v1.app.ts"
   },
   "devDependencies": {
-    "@smartweaver/slick-contract": "^0.0.4",
+    "@smartweaver/slick-contract": "0.x",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }

@@ -9,6 +9,7 @@ tmp/
 # Files
 .DS_Store
 *.log*
+*wallet.*
 logs
 # We only use yarn
 *lock.yaml

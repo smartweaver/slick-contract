@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import path from "node:path";
 import * as esbuild from "esbuild";
 import prettier from "prettier";
 
+const colors = {
+  bg: {
+    red: "\x1b[41m",
+  },
+  reset: "\x1b[0m",
+};
+
 class Help {
   error(message) {
-    this.write(`[ERROR] ${message}`);
+    return this.log(`\n\n${colors.bg.red}[ERROR]${colors.reset} ${message}\n`);
   }
 
   log(...messages) {
@@ -21,12 +29,21 @@ class Help {
 
   usage() {
     console.log(`
-Usage:
-
-  Build your contract JS file
+USAGE
   
-      npx @smartweaver/slick-contract build <CONTRACT_FILE>
+    npx @smartweaver/slick-contract <COMMAND> <CONTRACT_FILE> [STATE_FILE]
 
+
+EXAMPLE USAGE
+
+    npx @smartweaver/slick-contract build src/contract.ts src/state.ts
+
+
+COMMANDS
+
+    The commands for this script are as follows:
+
+    build        Build your contract's source and state files
 `);
 
     return this;
@@ -40,38 +57,40 @@ Usage:
 
 const help = new Help();
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - CLI BEGIN /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 (async () => {
   const [
     _a, // Ignore
     _b, // Ignore
     command,
     file1,
+    file2,
   ] = process.argv;
 
   if (command === "build") {
-    return await build(file1);
+    return await build(file1, file2);
   }
 
-  help.usage();
+  help.error(`Arg COMMAND not provided`).usage();
 })();
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - CLI END ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Build the contract file at the given `contractFilepath`.
  * @param {string} contractFilepath
  */
-async function build(contractFilepath) {
+async function build(contractFilepath, stateFilepath) {
   const outfile = contractFilepath + ".build.js";
 
   if (!contractFilepath) {
     help
       .error(`Arg CONTRACT_FILE not provided`)
-      .usage()
-      .exit(1);
-  }
-
-  if (!contractFilepath) {
-    help
-      .error(`Arg STATE_FILE not provided`)
       .usage()
       .exit(1);
   }
@@ -117,5 +136,102 @@ export async function handle(state`,
 
   fs.writeFileSync(outfile, formatted, "utf-8");
 
-  help.log(`Done. View your view at:\n\n  ${outfile}`);
+  help.log(`Creating ${stateFilepath}.json file`);
+
+  if (stateFilepath) {
+    let state;
+
+    if (path.extname(stateFilepath) === ".ts") {
+      state = await getStateFromTypeScriptFile(stateFilepath);
+    } else {
+      state = await getStateFromJavaScriptFile(stateFilepath);
+    }
+
+    if (!state) {
+      help.error(`Could not read state from ${stateFilepath}.
+- File does not export a \`state\` variable
+- File does not have a \`default\` export
+
+You will have to fix your state file to export a \`state\` variable or export a
+\`default\` value as the state. You can also create your state.json file manually.
+`);
+    } else {
+      fs.writeFileSync(
+        stateFilepath + ".json",
+        JSON.stringify(state, null, 2),
+        "utf-8",
+      );
+    }
+  }
+
+  help.log(`Done building contract files. If they built properly, view them at:
+
+  - ${outfile}
+  - ${stateFilepath ? (stateFilepath + ".json") : "(no state file provided)"}
+  
+`);
+}
+
+/**
+ * Attempt to get the state from the given TypeScript `filepath` file.
+ * @param {string} filepath The state file's filepath. This will be converted to
+ * JavaScript, saved to disk, and dynamically imported to get the `state`
+ * variable or default export value.
+ * @returns The value of the `state` variable or default export.
+ */
+async function getStateFromTypeScriptFile(filepath) {
+  help.log(
+    `State file is a TypeScript file`,
+    `Using esbuild to transform it to JavaScript`,
+  );
+
+  const transformed = await esbuild.transform(
+    fs.readFileSync(filepath, "utf-8"),
+    {
+      format: "esm",
+      logLevel: "debug",
+      minifyWhitespace: true,
+      target: "es2015",
+    },
+  );
+
+  if (!transformed || !transformed.code) {
+    help.error(`Could not transform ${filepath} to JavaScript`);
+    return;
+  }
+
+  const tmpFilepath = filepath + ".tmp.js";
+
+  fs.writeFileSync(tmpFilepath, transformed.code, "utf-8");
+
+  const state = await getStateFromJavaScriptFile(tmpFilepath);
+
+  fs.unlinkSync(tmpFilepath);
+
+  return state;
+}
+
+/**
+ * Attempt to get the state from the given JavaScript `filepath` file.
+ * @param {string} filepath The state file's filepath. This will be dynamically
+ * imported to get the `state` variable or default export value.
+ * @returns The value of the `state` variable or default export.
+ */
+async function getStateFromJavaScriptFile(filepath) {
+  help.log(`Importing ${filepath}`);
+
+  const imported = await import(path.join(process.cwd(), filepath));
+
+  help.log(`Using \`\state\`\ variable (if it exists)`);
+
+  let state = imported.state;
+
+  if (!state) {
+    help.log(
+      `Variable \`state\` does not exist. Using \`default\` import value instead.`,
+    );
+    state = imported.default;
+  }
+
+  return state;
 }
