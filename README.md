@@ -1,4 +1,4 @@
-# SmartWeaver Slick Contract
+# Slick Contract
 
 Slick builder APIs for Arweave smart contract creation
 
