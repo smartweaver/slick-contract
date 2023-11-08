@@ -24,7 +24,7 @@ const help = new Help();
 
 /**
  * Build the contract file at the given `contractFilepath`.
- * @param {string} contractFilepath 
+ * @param {string} contractFilepath
  */
 async function build(contractFilepath) {
   const outfile = contractFilepath + ".build.js";
@@ -71,7 +71,7 @@ async function build(contractFilepath) {
   formatted = formatted
     .replace(
       /export\s+\{.+};/g,
-      ""
+      "",
     )
     .replace(
       "function handle(state",
@@ -79,7 +79,7 @@ async function build(contractFilepath) {
 // Created using @smartweaver/slick-contract
 // Submit build issues to @smartweaver/slick-contract
 // Date created: ${new Date().toUTCString()}
-export async function handle(state`
+export async function handle(state`,
     );
 
   fs.writeFileSync(outfile, formatted, "utf-8");

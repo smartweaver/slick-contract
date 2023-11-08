@@ -64,20 +64,22 @@ This is a simple example showing how to:
     //
 
     export function handle(state, action) {
+      const context = { state, action };     // Create a `context`` object. This becomes the `context` param
+                                             // in the `.action("some_name", (context) => { ... })` methods.
 
-      return contract                        // Using your contract object ...
-        .handle({ state, action })           // ... call its `handle()` method (mentioned above) with a `context` object
+      try {
+        const result = await contract        // Pass the `context` object to your contract to get a `result`
+          .handle(context);
 
-        .then((context) => {                 // After your contract is done handling the `context` ...
-          return { state: context.state };   // ... you will get it back so you can return the `state`
-        })
-
-        .catch((e: any) => {                 // If errors occur, then you need to handle them and ...
-          let message = e.message            // ... throw the `ContractError` object yourself`
-            ? e.message
-            : "We hit an error. Sorry!";
-          throw new ContractError(message);
-        });
+        return { state: reuslt.state };      // The `result` will contain the `state` object that you return.
+                                             // Returning the `state` is required. See the following:
+                                             // https://github.com/ArweaveTeam/SmartWeave/blob/master/CONTRACT-GUIDE.md#contract-format-and-interface
+      } catch (error) {
+        const message = e.message            // Slick Contract's internals only throw `Error` objects. They
+          ? e.message                        // not throw `ContractError` objects. You have to throw the
+          : "We hit an error. Sorry!";       // `ContractError` object yourself like how it is shown here.
+        throw new ContractError(message);
+      }
     }
     ```
 
@@ -91,54 +93,58 @@ This is a simple example showing how to:
 
     _Note: This script tries to be smart about ensuring your built contract file has a valid `export async function handle(...)`, but please verify this manually. Otherwise your contract might not work in the Arweave network._
 
-### Example Write Interaction Handling
+### Action Objects
 
-This example shows how a write interaction transaction would be handled by the above contract.
+The `action` argument in the `handle` function should have the following `Action` data type shown below:
 
-If the contract receives the following action for the given state...
-
-```json
-// State
-{
-  "users": {},
-  "posts": {}
-}
-
-// Action
-{
-  "input": {
-    "function": "add_user",
-    "payload": {
-      "id": 1337,
-      "name": "CRKSTZ"
-    }
+```ts
+type Action = {
+  input: {
+    function: string;
+    payload?: any;
   }
+};
+
+export function handle(state: any, action: Action) {
+  //
+  // ... code shortened for brevity
+  //
 }
 ```
 
-... then the `handle()` function would process as follows:
+### Context Objects
+
+The `context` argument in the `.action("some_name", (context) => { ... })` method should have the following `Context` data type shown below:
 
 ```ts
 //
 // ... code shortened for brevity
 //
 
-export async function handle(state, action) {
+type Action = {
+  input: {
+    function: string;
+    payload?: any;
+  }
+};
 
-  const context = { state, action };               // Create a `context`` object. This becomes the `context` param
-                                                   // in the `.action("some_name", (context) => { ... })` methods.
+type Context = {
+  state: any;
+  action: Action;
+};
+
+export function handle(state: any, action: Action) {
 
   try {
-    const result = await contract.handle(context); // Pass the `context` object to your contract to get a `result`
 
-    return { state: reuslt.state };                // The `result` will contain the `state` object that you return.
-                                                   // Returning the `state` is required. See the following:
-                                                   // https://github.com/ArweaveTeam/SmartWeave/blob/master/CONTRACT-GUIDE.md#contract-format-and-interface
+    const context: Context = { state, action };
+    const result = contract.handle(context);
+    return { state: result.state };
+
   } catch (error) {
-    const message = e.message                      // Slick Contract's internals only throw `Error` objects. They
-      ? e.message                                  // not throw `ContractError` objects. You have to throw the
-      : "We hit an error. Sorry!";                 // `ContractError` object yourself like how it is shown here.
-    throw new ContractError(message);
+
+    throw new ContractError(error.message);
+
   }
 }
 ```
