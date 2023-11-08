@@ -2,10 +2,9 @@
 
 import fs from "node:fs";
 import * as esbuild from "esbuild";
-import prettier from "prettier"
+import prettier from "prettier";
 
 const help = new class Help {
-
   error(message) {
     this.write(`[ERROR] ${message}`);
   }
@@ -21,7 +20,9 @@ const help = new class Help {
   }
 
   usage() {
-    console.log("\nUsage:\n\n    npx @smartweaver/slick-contract <PATH_TO_CONTRACT_FILE> <PATH_TO_STATE_FILE>");
+    console.log(
+      "\nUsage:\n\n    npx @smartweaver/slick-contract <PATH_TO_CONTRACT_FILE> <PATH_TO_STATE_FILE>",
+    );
     return this;
   }
 
@@ -31,12 +32,10 @@ const help = new class Help {
   }
 }();
 
-
-(async() => {
-
+(async () => {
   const contractFilepath = process.argv[2];
   const outfile = contractFilepath + ".build.js";
-  
+
   if (!contractFilepath) {
     help
       .error(`Arg PATH_TO_CONTRACT_FILE not provided`)
@@ -59,16 +58,15 @@ const help = new class Help {
     target: "es2015",
   });
 
-  help.log(`Using prettier to format esbuild bundle output`)
+  help.log(`Using prettier to format esbuild bundle output`);
 
   const formatted = await prettier
     .format(fs.readFileSync(outfile, "utf-8"), {
       filepath: outfile,
-      parser: "typescript"
+      parser: "typescript",
     });
 
   fs.writeFileSync(outfile, formatted, "utf-8");
 
-  help.log(`Done`)
-
+  help.log(`Done`);
 })();

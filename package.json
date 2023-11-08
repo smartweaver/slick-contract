@@ -11,11 +11,11 @@
   "type": "module",
   "bin": "./bin/cli.js",
   "dependencies": {
-    "@smartweaver/core": "0.x"
+    "@smartweaver/core": "0.x",
+    "esbuild": "0.x",
+    "prettier": "3.x"
   },
   "devDependencies": {
-    "esbuild": "^0.19.5",
-    "prettier": "^3.0.3",
     "ts-node": "10.x",
     "tsup": "7.x",
     "typescript": "5.x",
