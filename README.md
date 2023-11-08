@@ -8,7 +8,7 @@ Slick builder APIs for Arweave smart contract creation
 npm install @smartweaver/slick-contract
 ```
 
-## Usage
+## Usage - Creating a Contract and State File
 
 This is a simple example showing how to:
 
@@ -100,6 +100,48 @@ This is a simple example showing how to:
    These are the files you deploy to the Arweave network.
 
     _Note: This script tries to be smart about ensuring your built contract file has a valid `export async function handle(...)`, but please verify this manually. Otherwise your contract might not work in the Arweave network._
+
+## Usage - CLI
+
+The CLI only exists to help you build your contract. It only:
+
+- bundles your contract file into a single `.js` file; and
+- converts your state file from `.ts|.js` to `.json`.
+
+You can run the CLI using:
+
+```bash
+npx @smartweaver/slick-contract <COMMAND> <CONTRACT_FILE> [STATE_FILE]
+```
+
+The full CLI usage is below:
+
+```text
+## Summary
+
+Add optional arg to CLI to build state file. Updated CLI usage is below:
+
+```text
+USAGE
+  
+    npx @smartweaver/slick-contract <COMMAND> <CONTRACT_FILE> [STATE_FILE]
+
+
+EXAMPLE USAGE
+
+    npx @smartweaver/slick-contract build src/contract.ts src/state.ts
+
+
+COMMANDS
+
+    The commands for this script are as follows:
+
+    build        Build your contract's source and state files
+```
+
+## Data Types
+
+Slick Contract has a strict syntax. It requires the `action` and `context` objects to match the data types below. Validation is performed on these objects to ensure they are in the correct data type format. If not, an error will be thrown with a message showing how to correct the objects.
 
 ### Action Objects
 
