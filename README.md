@@ -35,8 +35,10 @@ This is a simple example showing how to:
     ```ts
     // File: contract.ts
 
-    import { Contract } from "@smartweaver/slick-contract";
+    import { Contract } from "@smartweaver/slick-contract/mod.js";
     import { state } from "./state.ts";
+
+    declare const ContractError;
 
     //
     // Create your contract
@@ -63,7 +65,8 @@ This is a simple example showing how to:
     // Export the required handle function
     //
 
-    export function handle(state, action) {
+    export async function handle(state, action) {
+
       const context = { state, action };     // Create a `context`` object. This becomes the `context` param
                                              // in the `.action("some_name", (context) => { ... })` methods.
 
@@ -71,10 +74,10 @@ This is a simple example showing how to:
         const result = await contract        // Pass the `context` object to your contract to get a `result`
           .handle(context);
 
-        return { state: reuslt.state };      // The `result` will contain the `state` object that you return.
+        return { state: result.state };      // The `result` will contain the `state` object that you return.
                                              // Returning the `state` is required. See the following:
                                              // https://github.com/ArweaveTeam/SmartWeave/blob/master/CONTRACT-GUIDE.md#contract-format-and-interface
-      } catch (error) {
+      } catch (e) {
         const message = e.message            // Slick Contract's internals only throw `Error` objects. They
           ? e.message                        // not throw `ContractError` objects. You have to throw the
           : "We hit an error. Sorry!";       // `ContractError` object yourself like how it is shown here.
