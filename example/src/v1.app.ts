@@ -2,7 +2,6 @@ import { handle } from "./v1.contract.ts.build.js";
 import { state } from "./v1.state.ts";
 
 (async () => {
-
   // Add ContractError that gets injected when run in the execution environment
 
   globalThis.ContractError = class ContractError extends Error {
@@ -10,7 +9,7 @@ import { state } from "./v1.state.ts";
       super(...args);
       this.name = "ContractError";
     }
-  }
+  };
 
   // Define some reusable vars (yay DRY)
 
@@ -19,7 +18,7 @@ import { state } from "./v1.state.ts";
 
   // Simulate the contract handling an "add_user" interaction
 
-  console.log(`\n\nSending "add_user" function for 1337 user`)
+  console.log(`\n\nSending "add_user" function for 1337 user`);
   result = await handle(
     currentState,
     {
@@ -40,7 +39,7 @@ import { state } from "./v1.state.ts";
 
   // Simulate the contract handling an "add_post" interaction
 
-  console.log(`\n\nSending "add_post" function`)
+  console.log(`\n\nSending "add_post" function`);
   result = await handle(
     currentState,
     {
@@ -58,10 +57,10 @@ import { state } from "./v1.state.ts";
   currentState = result.state;
   console.log(`Function "add_post" result:`);
   console.log(currentState);
-  
+
   // Simulate the contract handling an "add_user" interaction
 
-  console.log(`\n\nSending "add_user" function for 1338 user`)
+  console.log(`\n\nSending "add_user" function for 1338 user`);
   result = await handle(
     currentState,
     {
@@ -82,7 +81,7 @@ import { state } from "./v1.state.ts";
 
   // Simulate the contract handling an "delete_user" interaction
 
-  console.log(`\n\nSending "delete_user" function`)
+  console.log(`\n\nSending "delete_user" function`);
   result = await handle(
     currentState,
     {
@@ -102,7 +101,7 @@ import { state } from "./v1.state.ts";
 
   // Simulate the contract handling an unknown function
 
-  console.log(`\n\nSending "hello" function`)
+  console.log(`\n\nSending "hello" function`);
   try {
     result = await handle(
       currentState,
@@ -114,7 +113,7 @@ import { state } from "./v1.state.ts";
       },
     );
   } catch (error) {
-    console.log(`\nThe contract threw an error: ${error}\n`)
+    console.log(`\nThe contract threw an error: ${error}\n`);
   }
 
   currentState = result.state;
