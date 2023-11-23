@@ -114,14 +114,14 @@ export class ActionsBuilder<
    * }
    * ```
    */
-  build<HandleMethodContext = { state: S; action: any }>() {
+  build() {
     const functions = this.functions;
     const chain = this.chain_builder.build();
 
     // TODO(crookse) Create a class
     const handler = {
       functions,
-      handle: <R = { state: S }>(context: HandleMethodContext): Promise<R> => {
+      handle: <R>(context: R): Promise<R> => {
         return Promise
           .resolve()
           .then(() => validateContext(context, functions))
