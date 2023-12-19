@@ -14,8 +14,7 @@ describe("methods", () => {
 
       // Define the contract
       const contract = Contract
-        .builder()
-        .initialState(state)
+        .builder<typeof state>()
         // The `context` data type is shown in the "Context Data Type" section below
         .action(
           "add_user",

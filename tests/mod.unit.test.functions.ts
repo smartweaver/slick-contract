@@ -20,8 +20,7 @@ class Multiply extends Contract.Handler {
 
 // Build the contract with some actions
 const contract = Contract
-  .builder()
-  .initialState(initialState)
+  .builder<typeof initialState>()
   .action("add", (context) => {
     const { input } = context.action;
     context.state.storage.push(input.payload.item);

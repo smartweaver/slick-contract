@@ -14,8 +14,7 @@ describe("methods", () => {
       }
 
       const contract = Contract
-        .builder()
-        .initialState(state)
+        .builder<typeof state>()
         .action(new Add("add"))
         .build();
 
@@ -65,8 +64,7 @@ describe("methods", () => {
       }
 
       const contract = Contract
-        .builder()
-        .initialState(state)
+        .builder<typeof state>()
         // Function 1
         .action(new Add("add"))
         // Function 2
@@ -82,7 +80,7 @@ describe("methods", () => {
         })
         // Function 4
         .action(new NoHandleMethod("no_handle_method"))
-        .build<ContractContext<typeof state>>();
+        .build();
 
       // There should be Function 1, 2, 3, and 4
       expect(contract.functions.length).toBe(4);

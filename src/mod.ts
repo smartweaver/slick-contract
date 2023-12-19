@@ -1,5 +1,6 @@
-import { InitialStateBuilder } from "./chains/InitialStateBuilder.ts";
+import { ActionsBuilder } from "./chains/ActionsBuilder.ts";
 import { HandlerWithFunctionName } from "./deps.ts";
+import { KeyValues } from "./types/KeyValues.ts";
 
 export type { Context as ContractContext } from "./types/Context.ts";
 
@@ -15,7 +16,7 @@ export class Contract {
    * Get the builder for building on object of this class.
    * @returns The builder.
    */
-  static builder() {
-    return new InitialStateBuilder();
+  static builder<S extends KeyValues<S> = any>() {
+    return new ActionsBuilder<S>();
   }
 }
