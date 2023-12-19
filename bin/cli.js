@@ -14,7 +14,7 @@ const esbuildConfigs = {
   sourcemap: false,
   splitting: false,
   target: "esnext",
-}
+};
 
 const colors = {
   bg: {
@@ -177,8 +177,8 @@ You will have to fix your state file to export a \`state\` variable or export a
 
 /**
  * This function only exists to bundle files with the same esbuild configs.
- * @param {string} filepath 
- * @param {string} outfile 
+ * @param {string} filepath
+ * @param {string} outfile
  */
 async function bundleTypeScriptFile(filepath, outfile) {
   await esbuild.build({
