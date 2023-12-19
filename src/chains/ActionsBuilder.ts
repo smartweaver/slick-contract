@@ -22,10 +22,10 @@ type ActionHandler =
 export class ActionsBuilder<
   S extends KeyValues<S>,
 > extends IsolatedHandlerChain {
-  #functions: string[] = [];
+  protected known_functions: string[] = [];
 
   get functions() {
-    return this.#functions;
+    return this.known_functions;
   }
 
   constructor() {
@@ -66,7 +66,7 @@ export class ActionsBuilder<
       });
     }
 
-    if (this.#functions.includes(fn)) {
+    if (this.known_functions.includes(fn)) {
       throw new Error(
         `Duplicate action name "${fn}" provided in \`.action(...)\` call`,
       );
@@ -126,7 +126,7 @@ export class ActionsBuilder<
           .resolve()
           .then(() => validateContext(context, functions))
           .then((validContext) => {
-            this.#addContractManager(
+            this.addContractManager(
               {
                 actions: chain,
               },
@@ -187,7 +187,7 @@ export class ActionsBuilder<
    *   +--> return result back to caller
    * ```
    */
-  #addContractManager(
+  protected addContractManager(
     contractMembers: {
       [K in keyof ContractManager["contract"]]: ContractManager["contract"][K];
     },

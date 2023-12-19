@@ -5,6 +5,17 @@ import path from "node:path";
 import * as esbuild from "esbuild";
 import prettier from "prettier";
 
+const esbuildConfigs = {
+  bundle: true,
+  format: "esm",
+  logLevel: "debug",
+  minifyWhitespace: true,
+  platform: "browser",
+  sourcemap: false,
+  splitting: false,
+  target: "esnext",
+}
+
 const colors = {
   bg: {
     red: "\x1b[41m",
@@ -84,6 +95,7 @@ const help = new Help();
 /**
  * Build the contract file at the given `contractFilepath`.
  * @param {string} contractFilepath
+ * @param {string} stateFilepath
  */
 async function build(contractFilepath, stateFilepath) {
   const outfile = contractFilepath + ".build.js";
@@ -97,18 +109,7 @@ async function build(contractFilepath, stateFilepath) {
 
   help.log(`Using esbuild to bundle ${contractFilepath}`);
 
-  await esbuild.build({
-    entryPoints: [contractFilepath],
-    bundle: true,
-    format: "esm",
-    logLevel: "debug",
-    minifyWhitespace: true,
-    outfile,
-    platform: "node",
-    sourcemap: false,
-    splitting: false,
-    target: "es2015",
-  });
+  await bundleTypeScriptFile(contractFilepath, outfile);
 
   help.log(`Using prettier to format esbuild bundle output`);
 
@@ -175,6 +176,19 @@ You will have to fix your state file to export a \`state\` variable or export a
 }
 
 /**
+ * This function only exists to bundle files with the same esbuild configs.
+ * @param {string} filepath 
+ * @param {string} outfile 
+ */
+async function bundleTypeScriptFile(filepath, outfile) {
+  await esbuild.build({
+    entryPoints: [filepath],
+    outfile,
+    ...esbuildConfigs,
+  });
+}
+
+/**
  * Attempt to get the state from the given TypeScript `filepath` file.
  * @param {string} filepath The state file's filepath. This will be converted to
  * JavaScript, saved to disk, and dynamically imported to get the `state`
@@ -189,18 +203,7 @@ async function getStateFromTypeScriptFile(filepath) {
 
   const tmpFilepath = filepath + ".tmp.js";
 
-  await esbuild.build({
-    entryPoints: [filepath],
-    bundle: true,
-    format: "esm",
-    logLevel: "debug",
-    minifyWhitespace: true,
-    outfile: tmpFilepath,
-    platform: "node",
-    sourcemap: false,
-    splitting: false,
-    target: "es2015",
-  });
+  await bundleTypeScriptFile(filepath, tmpFilepath);
 
   const state = await getStateFromJavaScriptFile(tmpFilepath);
 
