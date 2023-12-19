@@ -184,27 +184,23 @@ You will have to fix your state file to export a \`state\` variable or export a
 async function getStateFromTypeScriptFile(filepath) {
   help.log(
     `State file is a TypeScript file`,
-    `Using esbuild to transform it to JavaScript`,
+    `Using esbuild to bundle ${filepath}`,
   );
-
-  const transformed = await esbuild.transform(
-    fs.readFileSync(filepath, "utf-8"),
-    {
-      format: "esm",
-      logLevel: "debug",
-      minifyWhitespace: true,
-      target: "es2015",
-    },
-  );
-
-  if (!transformed || !transformed.code) {
-    help.error(`Could not transform ${filepath} to JavaScript`);
-    return;
-  }
 
   const tmpFilepath = filepath + ".tmp.js";
 
-  fs.writeFileSync(tmpFilepath, transformed.code, "utf-8");
+  await esbuild.build({
+    entryPoints: [filepath],
+    bundle: true,
+    format: "esm",
+    logLevel: "debug",
+    minifyWhitespace: true,
+    outfile: tmpFilepath,
+    platform: "node",
+    sourcemap: false,
+    splitting: false,
+    target: "es2015",
+  });
 
   const state = await getStateFromJavaScriptFile(tmpFilepath);
 
