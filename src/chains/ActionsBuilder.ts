@@ -118,7 +118,7 @@ export class ActionsBuilder<
     const functions = this.functions;
     const chain = this.chain_builder.build();
 
-    // TODO(crookse) Create a class
+    // TODO(crookse-cl) Create a class
     const handler = {
       functions,
       handle: <R>(context: R): Promise<R> => {
