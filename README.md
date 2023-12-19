@@ -117,11 +117,6 @@ npx @smartweaver/slick-contract <COMMAND> <CONTRACT_FILE> [STATE_FILE]
 The full CLI usage is below:
 
 ```text
-## Summary
-
-Add optional arg to CLI to build state file. Updated CLI usage is below:
-
-```text
 USAGE
   
     npx @smartweaver/slick-contract <COMMAND> <CONTRACT_FILE> [STATE_FILE]
@@ -198,3 +193,7 @@ export function handle(state: any, action: Action) {
   }
 }
 ```
+
+## Resources/Links
+
+- npm: https://www.npmjs.com/package/@smartweaver/slick-contract
